@@ -34,13 +34,12 @@ function mainMenu(person, people){
   }
 
   let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'").toLowerCase();
-  let infoResults;
   switch(displayOption){
     case "info":
       displayPerson(person);
     break;
     case "family":
-    // TODO: get person's family
+      displayFamily(person);
     break;
     case "descendants":
     // TODO: get person's descendants
@@ -150,6 +149,25 @@ function displayPerson(person, printSpouse = true){
   }
   return personInfo;
 }
+
+function displayFamily(person, printSpouse = true){
+  let personInfo = "";
+ 
+  if(person.parents){ 
+    for(let i = 0; i < person.parents.length; i++){
+      personInfo += "Parent: "
+      personInfo += person.parents[i] + "\n";
+    }
+  }
+  if(person.currentSpouse != null && printSpouse){
+    personInfo += "Current Spouse: " + "\n" + displayPerson(searchById(data, person.currentSpouse), false);
+  }
+  if(printSpouse){
+    alert(personInfo);
+  }
+  return personInfo;
+}
+
 // function that prompts and validates user input
 function promptFor(question, valid){
     let response = "";
