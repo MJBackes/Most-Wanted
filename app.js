@@ -10,7 +10,6 @@ function app(people){
   switch(searchType){
     case 'yes':
       searchResults = searchByName(people);
-      alert(JSON.stringify(searchResults));
       break;
     case 'no':
       // TODO: search by traits
@@ -35,10 +34,10 @@ function mainMenu(person, people){
   }
 
   let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'").toLowerCase();
-
+  let infoResults;
   switch(displayOption){
     case "info":
-    // TODO: get person's info
+      infoResults = displayPerson(people);
     break;
     case "family":
     // TODO: get person's family
