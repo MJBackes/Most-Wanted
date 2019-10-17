@@ -132,6 +132,11 @@ function searchByEyeColor(people, eyeColor){
   });
   return foundPerson;
 }
+function searchByDateOfBirth(people, dob){
+  if(!dob){
+    dob = promptFor("What is the person's date of birth?", isDOB);
+  }
+}
 // alerts a list of people
 function displayPeople(people){
   alert(people.map(function(person){
@@ -188,8 +193,48 @@ function isId(input){
   return (input.filter(isNumber).length == 9) && (input.filter(isLetter).length == 0);
 }
 function isNumber(input){
-  return "1234567890".indexOf(input) >= 0;
+  for(let i = 0; i < input.length; i++){
+    if("1234567890".indexOf(input.charAt(i)) < 0){
+      return false;
+    }
+  }
+  return true;
 }
 function isLetter(input){
   return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(input.toUpperCase()) >= 0;
+}
+function isDOB(input){
+  input = input.toString().trim().split("/");
+  return (input.length == 3 
+    && isNumber(parseInt(input[0])) 
+    && isNumber(parseInt(input[1])) 
+    && isNumber(parseInt(input[2])) 
+    && (input[0].toString().length == 1 || input[0].toString().length == 2) 
+    && (input[1].toString().length == 1 || input[1].toString().length == 2) 
+    && (input[2].toString().length == 2 || input[2].toString().length == 4));
+}
+function formatDOBInput(input){
+  input = input.toString().trim().split("/");
+  if(input[0].charAt(0) == "0"){
+    input[0] = input[0].charAt(1);
+  }
+  if(input[1].charAt(0) == "0"){
+    input[1] = input[1].charAt(1);
+  }
+  if(input[2].length == 2){
+    if(input[2].charAt(0) > 1){
+      input[2] = "19" + input[2];
+    }
+    else{
+      input[2] = "20" + input[2];
+    }
+  }
+  return input.reduce(function(output, input){
+    if(input.length != 4){
+      return output += input + "/";
+    }
+    else{
+      return output += input;
+    }
+  },"");
 }
