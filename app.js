@@ -115,7 +115,11 @@ function displayPerson(person, printSpouse = true){
     }
   }
   if(person.currentSpouse != null && printSpouse){
+<<<<<<< HEAD
     //personInfo += "Current Spouse: " + "\n" displayPerson(searchById(data, person.currentSpouse), false);
+=======
+    //personInfo +="Current Spouse: " + "\n" displayPerson(searchById(person.currentSpouse), false);
+>>>>>>> 83949c50b3c3f62ef6fd264d3c6acf3258595722
   }
   if(printSpouse){
     alert(personInfo);
