@@ -12,7 +12,7 @@ function app(people){
       searchResults = searchByName(people);
       break;
     case 'no':
-      // TODO: search by traits
+      
       break;
       default:
     app(people); // restart app
@@ -70,8 +70,35 @@ function searchByName(people, firstName, lastName){
       return false;
     }
   })
-  // TODO: find the person using the name they entered
   return foundPerson[0];
+}
+function searchByFirstName(people, firstName){
+  if(!firstName){
+  firstName = promptFor("What is the person's first name?", chars);
+  }
+  let foundPerson = people.filter(function(person){
+    if(person.firstName.toLowerCase() === firstName.toLowerCase()){
+      return true;
+    }
+    else{
+      return false;
+    }
+  })
+  return foundPerson;
+}
+function searchByLastName(people, lastName){
+  if(!lastName){
+  lastName = promptFor("What is the person's last name?", chars);
+  }
+  let foundPerson = people.filter(function(person){
+    if(person.lastName.toLowerCase() === lastName.toLowerCase()){
+      return true;
+    }
+    else{
+      return false;
+    }
+  })
+  return foundPerson;
 }
 function searchById(people, id){
   if(!id){
@@ -90,6 +117,7 @@ function searchById(people, id){
   });
   return foundPerson[0];
 }
+
 // alerts a list of people
 function displayPeople(people){
   alert(people.map(function(person){
@@ -115,11 +143,7 @@ function displayPerson(person, printSpouse = true){
     }
   }
   if(person.currentSpouse != null && printSpouse){
-<<<<<<< HEAD
-    //personInfo += "Current Spouse: " + "\n" displayPerson(searchById(data, person.currentSpouse), false);
-=======
-    //personInfo +="Current Spouse: " + "\n" displayPerson(searchById(person.currentSpouse), false);
->>>>>>> 83949c50b3c3f62ef6fd264d3c6acf3258595722
+    personInfo += "Current Spouse: " + "\n" + displayPerson(searchById(data, person.currentSpouse), false);
   }
   if(printSpouse){
     alert(personInfo);
