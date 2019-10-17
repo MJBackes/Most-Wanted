@@ -135,6 +135,16 @@ function searchByDateOfBirth(people, dob){
   if(!dob){
     dob = promptFor("What is the person's date of birth?", isDOB);
   }
+  dob = formatDOBInput(dob);
+  let foundPerson = people.filter(function(person){
+    if(person.dob == dob){
+      return true;
+    }
+    else{
+      return false;
+    }
+  });
+  return foundPerson;
 }
 // alerts a list of people
 function displayPeople(people){
