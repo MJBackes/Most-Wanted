@@ -2,7 +2,6 @@
 /*
 Build all of your functions for displaying and gathering information below (GUI).
 */
-
 // app is the function called to start the entire application
 function app(people){
   let searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
@@ -10,6 +9,7 @@ function app(people){
   switch(searchType){
     case 'yes':
       searchResults = searchByName(people);
+      alert(JSON.stringify(searchResults));
       break;
     case 'no':
       // TODO: search by traits
@@ -33,7 +33,7 @@ function mainMenu(person, people){
     return app(people); // restart
   }
 
-  let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
+  let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'").toLowerCase();
 
   switch(displayOption){
     case "info":
@@ -68,7 +68,7 @@ function searchByName(people){
     }
   })
   // TODO: find the person using the name they entered
-  return foundPerson;
+  return foundPerson[0];
 }
 
 // alerts a list of people
@@ -78,20 +78,36 @@ function displayPeople(people){
   }).join("\n"));
 }
 
-function displayPerson(person){
+function displayPerson(person, printSpouse = true){
   // print all of the information about a person:
   // height, weight, age, name, occupation, eye color.
-  let personInfo = "First Name: " + person.firstName + "\n";
-  personInfo += "Last Name: " + person.lastName + "\n";
-  // TODO: finish getting the rest of the information to display
-  alert(personInfo);
+  let personInfo = "First Name: " + person.firstName.toUpperCase() + "\n";
+  personInfo += "Last Name: " + person.lastName.toUpperCase() + "\n";
+  personInfo += "Gender: " + person.gender.toUpperCase() + "\n";
+  personInfo += "Date of Birth: " + person.dob.toUpperCase() + "\n";
+  personInfo += "Height: " + person.height.toUpperCase() + "\n";
+  personInfo += "Weight: " + person.weight.toUpperCase() + "\n";
+  personInfo += "Eye Color: " + person.eyeColor.toUpperCase() + "\n";
+  personInfo += "Occupation: " + person.occupation.toUpperCase() + "\n";
+  if(person.parents){
+    for(let i = 0; i < person.parents.length; i++){
+      personInfo += person.parents[i] + "\n";
+    }
+  }
+  if(person.currentSpouse != null && printSpouse){
+    personInfo +="Current Spouse: " + "\n" displayPerson(searchById(person.currentSpouse), false);
+  }
+  if(printSpouse){
+    alert(personInfo);
+  }
+  return personInfo;
 }
-
 // function that prompts and validates user input
 function promptFor(question, valid){
+    let response = "";
   do{
-    let response = prompt(question).trim();
-  } while(!response || !valid(response));
+    response = prompt(question);
+}while(!valid(response));
   return response;
 }
 
