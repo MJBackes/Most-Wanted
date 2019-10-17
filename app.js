@@ -56,10 +56,10 @@ function mainMenu(person, people){
 
 function searchByName(people, firstName, lastName){
   if(!firstName){
-  firstName = promptFor("What is the person's first name?", chars);
+  firstName = promptFor("What is the person's first name?", isTextString);
   }
   if(!lastName){
-  lastName = promptFor("What is the person's last name?", chars);
+  lastName = promptFor("What is the person's last name?", isTextString);
   }
   let foundPerson = people.filter(function(person){
     if(person.firstName.toLowerCase() === firstName.toLowerCase() && person.lastName.toLowerCase() === lastName.toLowerCase()){
@@ -73,7 +73,7 @@ function searchByName(people, firstName, lastName){
 }
 function searchByFirstName(people, firstName){
   if(!firstName){
-  firstName = promptFor("What is the person's first name?", chars);
+  firstName = promptFor("What is the person's first name?", isTextString);
   }
   let foundPerson = people.filter(function(person){
     if(person.firstName.toLowerCase() === firstName.toLowerCase()){
@@ -87,7 +87,7 @@ function searchByFirstName(people, firstName){
 }
 function searchByLastName(people, lastName){
   if(!lastName){
-  lastName = promptFor("What is the person's last name?", chars);
+  lastName = promptFor("What is the person's last name?", isTextString);
   }
   let foundPerson = people.filter(function(person){
     if(person.lastName.toLowerCase() === lastName.toLowerCase()){
@@ -118,7 +118,7 @@ function searchById(people, id){
 }
 function searchByEyeColor(people, eyeColor){
   if(!eyeColor){
-    eyeColor = promptFor("What is the person's eye color?", char);
+    eyeColor = promptFor("What is the person's eye color?", isTextString);
   }
   eyeColor = eyeColor.toLowerCase().trim();
   let foundPerson = people.filter(function(person){
@@ -147,7 +147,7 @@ function searchByDateOfBirth(people, dob){
       }
     }));
   }
-  else if(isAge(dob)){
+  else if(isAgeHeightWeight(dob)){
     foundPerson.push(people.filter(function(person){
       if(getAge(person.dob) == dob){
         return true;
@@ -161,8 +161,63 @@ function searchByDateOfBirth(people, dob){
 }
 function searchByHeight(people, height){
   if(!height){
-    height = promptFor("What is the person's height?", isHeight);
+    height = promptFor("What is the person's height?", isAgeHeightWeight);
   }
+  height = height.toString().trim();
+  let foundPerson = people.filter(function(person){
+    if(person.height == height){
+      return true;
+    }
+    else{
+      return false;
+    }
+  });
+  return foundPerson;
+}
+function searchByWeight(people, weight){
+  if(!weight){
+    weight = promptFor("What is the person's weight?", isAgeHeightWeight);
+  }
+  weight = weight.toString().trim();
+  let foundPerson = people.filter(function(person){
+    if(person.weight == weight){
+      return true;
+    }
+    else{
+      return false;
+    }
+  });
+  return foundPerson;
+}
+function searchByGender(people, gender){
+  if(!gender){
+    gender = promptFor("What is the person's gender?", isTextString);
+  }
+  gender = gender.toString().trim();
+  let foundPerson = people.filter(function(person){
+    if(person.gender == gender){
+      return true;
+    }
+    else{
+      return false;
+    }
+  });
+  return foundPerson;
+}
+function searchByOccupation(people, job){
+  if(!job){
+    job = promptFor("What is the person's occupation?", isTextString);
+  }
+  job = job.toString().trim();
+  let foundPerson = people.filter(function(person){
+    if(person.job == job){
+      return true;
+    }
+    else{
+      return false;
+    }
+  });
+  return foundPerson;
 }
 // alerts a list of people
 function displayPeople(people){
@@ -247,10 +302,6 @@ function isId(input){
   input = input.toString().trim().split("");
   return (input.filter(isNumber).length == 9) && (input.filter(isLetter).length == 0);
 }
-function isHeight(input){
-  input = input.toString().trim().split("");
-  return (input.fiter)
-}
 function isNumber(input){
   for(let i = 0; i < input.length; i++){
     if("1234567890".indexOf(input.charAt(i)) < 0){
@@ -272,12 +323,32 @@ function isDOB(input){
     && (input[1].toString().length == 1 || input[1].toString().length == 2) 
     && (input[2].toString().length == 2 || input[2].toString().length == 4));
 }
-function isAge(input){
+function isAgeHeightWeight(input){
   input = input.toString().trim();
     return (input.length > 0 && input.length <= 3) && isNumber(input);
 }
+function getHeight(input){
+  input = input.toString().trim().toLowerCase();
+  let testArray;
+  let output = 0;
+  if(input.indexOf("ft") > 0 || input.indexOf("foot") > 0){
+    output += parseInt(input.split("ft")[0].split("foot")[0])*12;
+    if(input.indexOf("in") > 0 || input.indexOf("inches") > 0){
+      if(input.indexOf("ft") > 0){
+      output += parseInt(input.split("ft")[1].split("inches")[0].split("in")[0]);
+      }
+      if(input.indexOf("foot") > 0){
+      output += parseInt(input.split("foot")[1].split("inches")[0].split("in")[0]);
+      }
+    }
+  }
+  else if(input.indexOf("in") > 0 || input.indexOf("inches") > 0){
+    output += parseInt(input.split("inches")[0].split("in")[0]);
+  }
+  return output;
+}
 function isDOBOrAge(input){
-  return isDOB(input) || isAge(input);
+  return isDOB(input) || isAgeHeightWeight(input);
 }
 function formatDOBInput(input){
   input = input.toString().trim().split("/");
@@ -303,4 +374,13 @@ function formatDOBInput(input){
       return output += input;
     }
   },"");
+}
+function isTextString(input){
+  input = input.toString().trim();
+  for(let i = 0; i< input.length; i++){
+    if(!isLetter(input.charAt(i))){
+      return false;
+    }
+  }
+  return true;
 }
