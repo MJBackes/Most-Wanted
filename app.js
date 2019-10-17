@@ -133,18 +133,36 @@ function searchByEyeColor(people, eyeColor){
 }
 function searchByDateOfBirth(people, dob){
   if(!dob){
-    dob = promptFor("What is the person's date of birth?", isDOB);
+    dob = promptFor("What is the person's date of birth or age?", isDOBOrAge);
   }
-  dob = formatDOBInput(dob);
-  let foundPerson = people.filter(function(person){
-    if(person.dob == dob){
-      return true;
-    }
-    else{
-      return false;
-    }
-  });
+  let foundPerson = [];
+  if(isDOB(dob)){
+    dob = formatDOBInput(dob);
+    foundPerson.push(people.filter(function(person){
+      if(person.dob == dob){
+        return true;
+      }
+      else{
+        return false;
+      }
+    }));
+  }
+  else if(isAge(dob)){
+    foundPerson.push(people.filter(function(person){
+      if(getAge(person.dob) == dob){
+        return true;
+      }
+      else{
+        return false;
+      }
+    }));
+  }
   return foundPerson;
+}
+function searchByHeight(people, height){
+  if(!height){
+    height = promptFor("What is the person's height?", isHeight);
+  }
 }
 // alerts a list of people
 function displayPeople(people){
@@ -205,7 +223,16 @@ function promptFor(question, valid){
 }while(!valid(response));
   return response;
 }
-
+function getAge(dob){
+  let now = new Date();
+  now = [now.getMonth() + 1, now.getDate(), now.getFullYear()];
+  dob = dob.toString().trim().split("/");
+  let age = now[2] - dob[2];
+  if(now[0] < dob[0] || (now[0] == dob[0] && now[1] > dob[1])){
+    age--;
+  }
+  return age;
+}
 // helper function to pass into promptFor to validate yes/no answers
 function yesNo(input){
   input = input.trim();
@@ -219,6 +246,10 @@ function chars(input){
 function isId(input){
   input = input.toString().trim().split("");
   return (input.filter(isNumber).length == 9) && (input.filter(isLetter).length == 0);
+}
+function isHeight(input){
+  input = input.toString().trim().split("");
+  return (input.fiter)
 }
 function isNumber(input){
   for(let i = 0; i < input.length; i++){
@@ -240,6 +271,13 @@ function isDOB(input){
     && (input[0].toString().length == 1 || input[0].toString().length == 2) 
     && (input[1].toString().length == 1 || input[1].toString().length == 2) 
     && (input[2].toString().length == 2 || input[2].toString().length == 4));
+}
+function isAge(input){
+  input = input.toString().trim();
+    return (input.length > 0 && input.length <= 3) && isNumber(input);
+}
+function isDOBOrAge(input){
+  return isDOB(input) || isAge(input);
 }
 function formatDOBInput(input){
   input = input.toString().trim().split("/");
