@@ -5,6 +5,7 @@ Build all of your functions for displaying and gathering information below (GUI)
 // app is the function called to start the entire application
 function app(people){
   let searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
+  searchType = searchType.trim();
   let searchResults;
   switch(searchType){
     case 'yes':
@@ -60,7 +61,7 @@ function searchByName(people){
   let lastName = promptFor("What is the person's last name?", chars);
 
   let foundPerson = people.filter(function(person){
-    if(person.firstName === firstName && person.lastName === lastName){
+    if(person.firstName.toLowerCase() === firstName.toLowerCase() && person.lastName.toLowerCase() === lastName.toLowerCase()){
       return true;
     }
     else{
@@ -95,7 +96,7 @@ function displayPerson(person, printSpouse = true){
     }
   }
   if(person.currentSpouse != null && printSpouse){
-    personInfo +="Current Spouse: " + "\n" displayPerson(searchById(person.currentSpouse), false);
+    //personInfo +="Current Spouse: " + "\n" displayPerson(searchById(person.currentSpouse), false);
   }
   if(printSpouse){
     alert(personInfo);
@@ -113,6 +114,7 @@ function promptFor(question, valid){
 
 // helper function to pass into promptFor to validate yes/no answers
 function yesNo(input){
+  input = input.trim();
   return input.toLowerCase() == "yes" || input.toLowerCase() == "no";
 }
 
