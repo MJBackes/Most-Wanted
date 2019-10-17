@@ -12,7 +12,7 @@ function app(people){
       searchResults = searchByName(people);
       break;
     case 'no':
-      
+      searchResults = chooseIndividual(wideSearch(people));
       break;
       default:
     app(people); // restart app
@@ -22,7 +22,28 @@ function app(people){
   // Call the mainMenu function ONLY after you find the SINGLE person you are looking for
   mainMenu(searchResults, people);
 }
+function chooseIndividual(people){
 
+}
+function wideSearch(people){
+  let searchType = promptFor("Enter the type of information you would like to search by(Choices are: First Name, Last Name, ID Number, Height, Weight, Age, Date of Birth, Eye Color, Spouse's ID Number, Parents ID Number.):", yesNo).toLowerCase();
+  searchType = searchType.trim().toLowerCase().split("").filter(isLetter).reduce(function(output,input){
+    return output += input;
+  },"");
+  let searchResults;
+  /*switch(searchType){
+    case 'firstname':*/
+
+}
+function getDescendants(people,person){
+  let output = searchByParentsId(people,person.id);
+  if(output){
+    for(let i = 0; i < output.length; i++){
+       output = output.concat(getDescendants(people,output[i]));
+     }
+  }
+  return output;
+}
 // Menu function to call once you find who you are looking for
 function mainMenu(person, people){
 
@@ -253,6 +274,7 @@ function searchByParentsId(people, id){
   });
   return foundPerson;
 }
+
 // alerts a list of people
 function displayPeople(people){
   alert(people.map(function(person){
@@ -306,7 +328,7 @@ function displayFamily(person, printSpouse = true){
 
 // function that prompts and validates user input
 function promptFor(question, valid){
-    let response = "";
+    let response;
   do{
     response = prompt(question);
 }while(!valid(response));
