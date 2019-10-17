@@ -69,7 +69,7 @@ function searchByName(people, firstName, lastName){
     else{
       return false;
     }
-  })
+  });
   return foundPerson[0];
 }
 function searchByFirstName(people, firstName){
@@ -83,7 +83,7 @@ function searchByFirstName(people, firstName){
     else{
       return false;
     }
-  })
+  });
   return foundPerson;
 }
 function searchByLastName(people, lastName){
@@ -97,7 +97,7 @@ function searchByLastName(people, lastName){
     else{
       return false;
     }
-  })
+  });
   return foundPerson;
 }
 function searchById(people, id){
@@ -117,7 +117,21 @@ function searchById(people, id){
   });
   return foundPerson[0];
 }
-
+function searchByEyeColor(people, eyeColor){
+  if(!eyeColor){
+    eyeColor = promptFor("What is the person's eye color?", char);
+  }
+  eyeColor = eyeColor.toLowerCase().trim();
+  let foundPerson = people.filter(function(person){
+    if(person.eyeColor == eyeColor){
+      return true;
+    }
+    else{
+      return false;
+    }
+  });
+  return foundPerson;
+}
 // alerts a list of people
 function displayPeople(people){
   alert(people.map(function(person){
