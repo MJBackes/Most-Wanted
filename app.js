@@ -5,11 +5,11 @@ Build all of your functions for displaying and gathering information below (GUI)
 // app is the function called to start the entire application
 function app(people){
   let searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
+  searchType = searchType.trim();
   let searchResults;
   switch(searchType){
     case 'yes':
       searchResults = searchByName(people);
-      alert(JSON.stringify(searchResults));
       break;
     case 'no':
       // TODO: search by traits
@@ -37,7 +37,7 @@ function mainMenu(person, people){
 
   switch(displayOption){
     case "info":
-    // TODO: get person's info
+      displayPerson(person);
     break;
     case "family":
     // TODO: get person's family
@@ -55,12 +55,15 @@ function mainMenu(person, people){
   }
 }
 
-function searchByName(people){
-  let firstName = promptFor("What is the person's first name?", chars);
-  let lastName = promptFor("What is the person's last name?", chars);
-
+function searchByName(people, firstName, lastName){
+  if(!firstName){
+  firstName = promptFor("What is the person's first name?", chars);
+  }
+  if(!lastName){
+  lastName = promptFor("What is the person's last name?", chars);
+  }
   let foundPerson = people.filter(function(person){
-    if(person.firstName === firstName && person.lastName === lastName){
+    if(person.firstName.toLowerCase() === firstName.toLowerCase() && person.lastName.toLowerCase() === lastName.toLowerCase()){
       return true;
     }
     else{
@@ -70,7 +73,23 @@ function searchByName(people){
   // TODO: find the person using the name they entered
   return foundPerson[0];
 }
-
+function searchById(people, id){
+  if(!id){
+    id = promptFor("What is the person's ID number?", isId);
+  }
+  id = id.toString().trim().split("").filter(isNumber).reduce(function(output,input){
+    return output += input;
+  },"");
+  let foundPerson = people.filter(function(person){
+    if(person.id == id){
+      return true;
+    }
+    else{
+      return false;
+    }
+  });
+  return foundPerson[0];
+}
 // alerts a list of people
 function displayPeople(people){
   alert(people.map(function(person){
@@ -84,18 +103,19 @@ function displayPerson(person, printSpouse = true){
   let personInfo = "First Name: " + person.firstName.toUpperCase() + "\n";
   personInfo += "Last Name: " + person.lastName.toUpperCase() + "\n";
   personInfo += "Gender: " + person.gender.toUpperCase() + "\n";
-  personInfo += "Date of Birth: " + person.dob.toUpperCase() + "\n";
-  personInfo += "Height: " + person.height.toUpperCase() + "\n";
-  personInfo += "Weight: " + person.weight.toUpperCase() + "\n";
+  personInfo += "Date of Birth: " + person.dob + "\n";
+  personInfo += "Height: " + person.height + "\n";
+  personInfo += "Weight: " + person.weight + "\n";
   personInfo += "Eye Color: " + person.eyeColor.toUpperCase() + "\n";
   personInfo += "Occupation: " + person.occupation.toUpperCase() + "\n";
-  if(person.parents){
+  if(person.parents){ 
     for(let i = 0; i < person.parents.length; i++){
+      personInfo += "Parent: "
       personInfo += person.parents[i] + "\n";
     }
   }
   if(person.currentSpouse != null && printSpouse){
-    personInfo +="Current Spouse: " + "\n" displayPerson(searchById(person.currentSpouse), false);
+    //personInfo += "Current Spouse: " + "\n" displayPerson(searchById(data, person.currentSpouse), false);
   }
   if(printSpouse){
     alert(personInfo);
@@ -113,10 +133,21 @@ function promptFor(question, valid){
 
 // helper function to pass into promptFor to validate yes/no answers
 function yesNo(input){
+  input = input.trim();
   return input.toLowerCase() == "yes" || input.toLowerCase() == "no";
 }
 
 // helper function to pass in as default promptFor validation
 function chars(input){
   return true; // default validation only
+}
+function isId(input){
+  input = input.toString().trim().split("");
+  return (input.filter(isNumber).length == 9) && (input.filter(isLetter).length == 0);
+}
+function isNumber(input){
+  return "1234567890".indexOf(input) >= 0;
+}
+function isLetter(input){
+  return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(input.toUpperCase()) >= 0;
 }
