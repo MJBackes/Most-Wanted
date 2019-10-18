@@ -26,11 +26,8 @@ function app(people){
 
 // }
 function wideSearch(people){
-  let searchType = promptFor("Enter the type of information you would like to search by(Choices are: First Name, Last Name, Gender, Occupation, ID Number, Height, Weight, Age, Date of Birth, Eye Color, Spouse's ID Number, Parent's ID Number.):", isTextString).toLowerCase();
-  searchType = searchType.trim().toLowerCase().split("").filter(isLetter).reduce(function(output,input){
-    console.log(searchType);
-    return output += input;
-  },"");
+  let pool = people;
+  let willContinue = true;
   let searchResults;
   switch(searchType){
     case 'first name':
@@ -73,8 +70,9 @@ function wideSearch(people){
         searchResults = wideSearch(people);
       break;
   }
-
+  return searchResults[0];
 }
+
 function getDescendants(people,person){
   let output = searchByParentsId(people,person.id);
   if(output){
@@ -112,22 +110,23 @@ function removeDuplicates(array){
 function mainMenu(person, people){
 
   /* Here we pass in the entire person object that we found in our search, as well as the entire original dataset of people. We need people in order to find descendants and other information that the user may want. */
-
   if(!person){
     alert("Could not find that individual.");
     return app(people); // restart
   }
-
   let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'").toLowerCase();
   switch(displayOption){
     case "info":
       displayPerson(person);
+      mainMenu(person, people);
     break;
     case "family":
       displayFamily(people,person);
+      mainMenu(person, people);
     break;
     case "descendants":
       displayPeople(getDescendants(people,person));
+      mainMenu(person, people);
     break;
     case "restart":
     app(people); // restart
@@ -220,31 +219,29 @@ function searchByDateOfBirth(people, dob){
   if(!dob){
     dob = promptFor("What is the person's date of birth?", isDOB);
   }
-  let foundPerson = [];
     dob = formatDOBInput(dob);
-    foundPerson.push(people.filter(function(person){
+   let foundPerson = people.filter(function(person){
       if(person.dob == dob){
         return true;
       }
       else{
         return false;
       }
-    }));
+    });
   return foundPerson;
 }
 function searchByAge(people, age){
 if(!age){
     age = promptFor("What is the person's age?", isAgeHeightWeight);
   }
-  let foundPerson = [];
-  foundPerson.push(people.filter(function(person){
+  let foundPerson = people.filter(function(person){
       if(getAge(person.dob) == age){
         return true;
       }
       else{
         return false;
       }
-    }));
+    });
   return foundPerson;
 }
 function searchByHeight(people, height){
@@ -341,12 +338,12 @@ function searchByParentsId(people, id){
   });
   return foundPerson;
 }
-function removeSpaces(string){
+function removeSpacesAndApost(string){
   let output = "";
   if(string){
     string = string.toString().toLowerCase()
     for(let i = 0; i < string.length; i++){
-      if(string.charAt(i) != " "){
+      if(string.charAt(i) != " " && string.charAt(i) != "'"){
         output += string.charAt(i);
       }
     }
@@ -354,10 +351,18 @@ function removeSpaces(string){
   return output;
 }
 // alerts a list of people
-function displayPeople(people){
-  alert(people.map(function(person){
+function displayPeople(people, isSearch = false){
+  if(!isSearch){
+    alert(people.map(function(person){
     return person.firstName + " " + person.lastName;
   }).join("\n"));
+  }
+  else{
+    alert("Current pool of people who match all the criteria you have input: \n" + 
+      people.map(function(person){
+    return person.firstName + " " + person.lastName;
+  }).join("\n"));
+  }
 }
 
 function displayPerson(person, printSpouse = true){
@@ -378,7 +383,8 @@ function displayPerson(person, printSpouse = true){
     }
   }
   if(person.currentSpouse != null && printSpouse){
-    personInfo += "Current Spouse: " + "\n" + displayPerson(searchById(data, person.currentSpouse), false);
+    let spouse = searchById(person.currentSpouse);
+    personInfo += "Current Spouse: " + "\n" + spuse.firstName.toUpperCase() + " " + spouse.lastName.toUpperCase();
   }
   if(printSpouse){
     alert(personInfo);
@@ -409,10 +415,10 @@ function displayFamily(people, person, isPrint = true){
   if(personInfo.length > 0){
     alert(personInfo);
   }
-  else {
-    (alert("That person has no parents,siblings or current spouse."));
-    return personInfo;
+  else{
+    alert("That person has no parents,siblings or current spouse.")
   }
+  return personInfo;
 }
 
 // function that prompts and validates user input
@@ -468,9 +474,12 @@ function isDOB(input){
       && isNumber(parseInt(input[0])) 
       && isNumber(parseInt(input[1])) 
       && isNumber(parseInt(input[2])) 
-      && (input[0].toString().length == 1 || input[0].toString().length == 2) 
-      && (input[1].toString().length == 1 || input[1].toString().length == 2) 
-      && (input[2].toString().length == 2 || input[2].toString().length == 4));
+      && (input[0].toString().length == 1 
+        || input[0].toString().length == 2) 
+      && (input[1].toString().length == 1 
+        || input[1].toString().length == 2) 
+      && (input[2].toString().length == 2 
+        || input[2].toString().length == 4));
   }
 }
 function isAgeHeightWeight(input){
@@ -479,13 +488,20 @@ function isAgeHeightWeight(input){
     return (input.length > 0 && input.length <= 3) && isNumber(input);
   }
 }
+function isHeight(input){
+  return indexOf("ft") > 0
+    || indexOf("foot") > 0
+    || indexOf("feet") > 0
+    || indexOf("in") > 0
+    || indexOf("inches") > 0;
+}
 function getHeight(input){
   if(input){
     input = input.toString().trim().toLowerCase();
     let testArray;
     let output = 0;
-    if(input.indexOf("ft") > 0 || input.indexOf("foot") > 0){
-      output += parseInt(input.split("ft")[0].split("foot")[0])*12;
+    if(input.indexOf("ft") > 0 || input.indexOf("foot") > 0 || input.indexOf("feet") > 0){
+      output += parseInt(input.split("ft")[0].split("foot")[0].split("feet")[0])*12;
       if(input.indexOf("in") > 0 || input.indexOf("inches") > 0){
         if(input.indexOf("ft") > 0){
         output += parseInt(input.split("ft")[1].split("inches")[0].split("in")[0]);
@@ -493,6 +509,10 @@ function getHeight(input){
         if(input.indexOf("foot") > 0){
         output += parseInt(input.split("foot")[1].split("inches")[0].split("in")[0]);
         }
+        if(input.indexOf("feet") > 0){
+        output += parseInt(input.split("feet")[1].split("inches")[0].split("in")[0]);
+        }
+
       }
     }
     else if(input.indexOf("in") > 0 || input.indexOf("inches") > 0){
@@ -531,7 +551,7 @@ function formatDOBInput(input){
 }
 function isTextString(input){
   if(input){
-    input = input.toString().trim();
+    input = removeSpacesAndApost(input.toString());
     for(let i = 0; i< input.length; i++){
       if(!isLetter(input.charAt(i))){
         return false;
