@@ -341,7 +341,6 @@ function searchByParentsId(people, id){
   });
   return foundPerson;
 }
-
 function removeSpaces(string){
   let output = "";
   if(string){
@@ -354,7 +353,6 @@ function removeSpaces(string){
   }
   return output;
 }
-
 // alerts a list of people
 function displayPeople(people){
   alert(people.map(function(person){
