@@ -342,6 +342,19 @@ function searchByParentsId(people, id){
   return foundPerson;
 }
 
+function removeSpaces(string){
+  let output = "";
+  if(string){
+    string = string.toString().toLowerCase()
+    for(let i = 0; i < string.length; i++){
+      if(string.charAt(i) != " "){
+        output += string.charAt(i);
+      }
+    }
+  }
+  return output;
+}
+
 // alerts a list of people
 function displayPeople(people){
   alert(people.map(function(person){
