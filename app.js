@@ -12,7 +12,7 @@ function app(people){
       searchResults = searchByName(people);
       break;
     case 'no':
-      searchResults = chooseIndividual(wideSearch(people));
+      searchResults = wideSearch(people);
       break;
       default:
     app(people); // restart app
@@ -22,17 +22,57 @@ function app(people){
   // Call the mainMenu function ONLY after you find the SINGLE person you are looking for
   mainMenu(searchResults, people);
 }
-function chooseIndividual(people){
+// function chooseIndividual(people){
 
-}
+// }
 function wideSearch(people){
-  let searchType = promptFor("Enter the type of information you would like to search by(Choices are: First Name, Last Name, ID Number, Height, Weight, Age, Date of Birth, Eye Color, Spouse's ID Number, Parents ID Number.):", yesNo).toLowerCase();
+  let searchType = promptFor("Enter the type of information you would like to search by(Choices are: First Name, Last Name, Gender, Occupation, ID Number, Height, Weight, Age, Date of Birth, Eye Color, Spouse's ID Number, Parent's ID Number.):", isTextString).toLowerCase();
   searchType = searchType.trim().toLowerCase().split("").filter(isLetter).reduce(function(output,input){
+    console.log(searchType);
     return output += input;
   },"");
   let searchResults;
-  /*switch(searchType){
-    case 'firstname':*/
+  switch(searchType){
+    case 'first name':
+        searchResults = searchByFirstName(people);
+      break;
+    case 'last name':
+        searchResults = searchByLastName(people);
+        break;
+    case 'gender':
+        searchResults = searchByGender(people);
+        break;
+    case 'occupation':
+        searchResults = searchByOccupation(people);
+        break;
+    case 'id number':
+        searchResults = searchById(people);
+        break;
+    case 'height':
+        searchResults = searchByHeight(people);
+        break;
+    case 'weight':
+        searchResults = searchByWeight(people);
+        break;
+    case 'age':
+        searchResults = searchByAge(people);
+        break;
+    case 'date of birth':
+        searchResults = searchByDateOfBirth(people);
+        break;
+    case 'eye color':
+        searchResults = searchByEyeColor(people);
+        break;
+    case 'spouse\'s id number':
+        searchResults = searchBySpousesId(people);
+        break;
+    case 'parent\'s id number':
+        searchResults = searchByParentsId(people);
+        break;
+    default:
+        searchResults = chooseIndividual(wideSearch(people));
+      break;
+  }
 
 }
 function getDescendants(people,person){
@@ -379,6 +419,7 @@ function promptFor(question, valid){
     let response;
   do{
     response = prompt(question);
+
 }while(!valid(response));
   return response;
 }
