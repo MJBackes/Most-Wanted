@@ -84,6 +84,30 @@ function getDescendants(people,person){
   }
   return output;
 }
+function getSiblings(people, person){
+  let siblings = [];
+  let output = [];
+  if(person.parents.length > 0){
+    for(let i = 0; i < person.parents.length; i++){
+       siblings = siblings.concat(getDescendants(people,searchById(people,person.parents[i])));
+     }
+     for(let i = 0; i < siblings.length; i++){
+      if(siblings[i] != person){
+        output.push(siblings[i]);
+      }
+     }
+  }
+  return removeDuplicates(output);
+}
+function removeDuplicates(array){
+  let output = [];
+  for (let i = 0; i < array.length; i++){
+    if(!output.includes(array[i])){
+      output.push(array[i]);
+    }
+  }
+  return output;
+}
 // Menu function to call once you find who you are looking for
 function mainMenu(person, people){
 
@@ -100,7 +124,7 @@ function mainMenu(person, people){
       displayPerson(person);
     break;
     case "family":
-      displayFamily(person);
+      displayFamily(people,person);
     break;
     case "descendants":
       displayPeople(getDescendants(people,person));
@@ -351,21 +375,31 @@ function displayPerson(person, printSpouse = true){
   return personInfo;
 }
 
-function displayFamily(person, printSpouse = true){
+function displayFamily(people, person, isPrint = true){
   let personInfo = "";
- 
+  let siblings = getSiblings(people, person);
+  let parent;
   if(person.parents){ 
     for(let i = 0; i < person.parents.length; i++){
       personInfo += "Parent: "
-      personInfo += person.parents[i] + "\n";
+      parent = searchById(people,person.parents[i]);
+      personInfo += parent.firstName + " " + parent.lastName + "\n";
     }
   }
-  if(person.currentSpouse != null && printSpouse){
-    personInfo += "Current Spouse: " + "\n" + displayPerson(searchById(data, person.currentSpouse), false);
+  if(person.currentSpouse != null){
+    personInfo += "Current Spouse: " + "\n" + searchById(people, person.currentSpouse).firstName + " " + searchById(people, person.currentSpouse).lastName;
+    }
+  if(siblings.length > 0){
+      personInfo += "Siblings: " + "\n";
+      for(let i = 0; i < siblings.length; i++){
+        personInfo += siblings[i].firstName + " " + siblings[i].lastName + "\n";
+      }
   }
-  if(printSpouse){
+  if(personInfo.length > 0){
     alert(personInfo);
   }
+  else(
+    alert("That person has no parents,siblings or current spouse."))
   return personInfo;
 }
 
@@ -399,8 +433,10 @@ function chars(input){
   return true; // default validation only
 }
 function isId(input){
-  input = input.toString().trim().split("");
-  return (input.filter(isNumber).length == 9) && (input.filter(isLetter).length == 0);
+  if(input){
+    input = input.toString().trim().split("");
+    return (input.filter(isNumber).length == 9) && (input.filter(isLetter).length == 0);
+  }
 }
 function isNumber(input){
   for(let i = 0; i < input.length; i++){
@@ -414,36 +450,42 @@ function isLetter(input){
   return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(input.toUpperCase()) >= 0;
 }
 function isDOB(input){
-  input = input.toString().trim().split("/");
-  return (input.length == 3 
-    && isNumber(parseInt(input[0])) 
-    && isNumber(parseInt(input[1])) 
-    && isNumber(parseInt(input[2])) 
-    && (input[0].toString().length == 1 || input[0].toString().length == 2) 
-    && (input[1].toString().length == 1 || input[1].toString().length == 2) 
-    && (input[2].toString().length == 2 || input[2].toString().length == 4));
+  if(input){
+    input = input.toString().trim().split("/");
+    return (input.length == 3 
+      && isNumber(parseInt(input[0])) 
+      && isNumber(parseInt(input[1])) 
+      && isNumber(parseInt(input[2])) 
+      && (input[0].toString().length == 1 || input[0].toString().length == 2) 
+      && (input[1].toString().length == 1 || input[1].toString().length == 2) 
+      && (input[2].toString().length == 2 || input[2].toString().length == 4));
+  }
 }
 function isAgeHeightWeight(input){
+  if(input){
   input = input.toString().trim();
     return (input.length > 0 && input.length <= 3) && isNumber(input);
+  }
 }
 function getHeight(input){
-  input = input.toString().trim().toLowerCase();
-  let testArray;
-  let output = 0;
-  if(input.indexOf("ft") > 0 || input.indexOf("foot") > 0){
-    output += parseInt(input.split("ft")[0].split("foot")[0])*12;
-    if(input.indexOf("in") > 0 || input.indexOf("inches") > 0){
-      if(input.indexOf("ft") > 0){
-      output += parseInt(input.split("ft")[1].split("inches")[0].split("in")[0]);
-      }
-      if(input.indexOf("foot") > 0){
-      output += parseInt(input.split("foot")[1].split("inches")[0].split("in")[0]);
+  if(input){
+    input = input.toString().trim().toLowerCase();
+    let testArray;
+    let output = 0;
+    if(input.indexOf("ft") > 0 || input.indexOf("foot") > 0){
+      output += parseInt(input.split("ft")[0].split("foot")[0])*12;
+      if(input.indexOf("in") > 0 || input.indexOf("inches") > 0){
+        if(input.indexOf("ft") > 0){
+        output += parseInt(input.split("ft")[1].split("inches")[0].split("in")[0]);
+        }
+        if(input.indexOf("foot") > 0){
+        output += parseInt(input.split("foot")[1].split("inches")[0].split("in")[0]);
+        }
       }
     }
-  }
-  else if(input.indexOf("in") > 0 || input.indexOf("inches") > 0){
-    output += parseInt(input.split("inches")[0].split("in")[0]);
+    else if(input.indexOf("in") > 0 || input.indexOf("inches") > 0){
+      output += parseInt(input.split("inches")[0].split("in")[0]);
+    }
   }
   return output;
 }
@@ -476,10 +518,12 @@ function formatDOBInput(input){
   },"");
 }
 function isTextString(input){
-  input = input.toString().trim();
-  for(let i = 0; i< input.length; i++){
-    if(!isLetter(input.charAt(i))){
-      return false;
+  if(input){
+    input = input.toString().trim();
+    for(let i = 0; i< input.length; i++){
+      if(!isLetter(input.charAt(i))){
+        return false;
+      }
     }
   }
   return true;
