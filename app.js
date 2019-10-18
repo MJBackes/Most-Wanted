@@ -264,16 +264,16 @@ function searchByParentsId(people, id){
   if(!id){
     id = promptFor("What is the ID number of one of the person's parents?", isId);
   }
-  id = id.toString().trim().split("").filter(isNumber).reduce(function(output,input){
+  id = parseInt(id.toString().split("").filter(isNumber).reduce(function(output,input){
     return output += input;
-  },"");
+  },""));
   let foundPerson = people.filter(function(person){
-    for(let i = 0; i < person.parents.length; i++){
-      if(person.parents[i] == id){
+      if(person.parents.includes(id)){
         return true;
       }
-    }
+      else{
         return false;
+      }
   });
   return foundPerson;
 }
