@@ -409,9 +409,10 @@ function displayFamily(people, person, isPrint = true){
   if(personInfo.length > 0){
     alert(personInfo);
   }
-  else(
-    alert("That person has no parents,siblings or current spouse."))
-  return personInfo;
+  else {
+    (alert("That person has no parents,siblings or current spouse."));
+    return personInfo;
+  }
 }
 
 // function that prompts and validates user input
