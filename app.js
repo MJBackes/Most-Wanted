@@ -29,7 +29,6 @@ function wideSearch(people){
   let pool = people;
   let willContinue = true;
   let searchResults;
-<<<<<<< HEAD
   while(willContinue){
       let searchType = promptFor("Enter the type of information you would like to search by or type 'quit' to exit"  
           + "(Choices are: First Name, Last Name,\n Gender, Occupation,\n ID Number, Height,\n Weight, Age,\n"
@@ -91,52 +90,9 @@ function wideSearch(people){
       if(pool.length == 1){
         willContinue = false;
       }
-=======
-  switch(searchType){
-    case 'first name':
-        searchResults = searchByFirstName(people);
-      break;
-    case 'last name':
-        searchResults = searchByLastName(people);
-        break;
-    case 'gender':
-        searchResults = searchByGender(people);
-        break;
-    case 'occupation':
-        searchResults = searchByOccupation(people);
-        break;
-    case 'id number':
-        searchResults = searchById(people);
-        break;
-    case 'height':
-        searchResults = searchByHeight(people);
-        break;
-    case 'weight':
-        searchResults = searchByWeight(people);
-        break;
-    case 'age':
-        searchResults = searchByAge(people);
-        break;
-    case 'date of birth':
-        searchResults = searchByDateOfBirth(people);
-        break;
-    case 'eye color':
-        searchResults = searchByEyeColor(people);
-        break;
-    case 'spouse\'s id number':
-        searchResults = searchBySpousesId(people);
-        break;
-    case 'parent\'s id number':
-        searchResults = searchByParentsId(people);
-        break;
-    default:
-        searchResults = wideSearch(people);
-      break;
->>>>>>> 2f4d63b210d3cf70f771d47984ba122ea9435a45
-  }
+   }
   return searchResults[0];
-}
-
+  }
 function getDescendants(people,person){
   let output = searchByParentsId(people,person.id);
   if(output){
