@@ -31,7 +31,7 @@ function wideSearch(people){
   let searchResults;
   while(willContinue){
       let searchType = promptFor("SINGLE SEARCH:\nEnter the type of information you would like to search by,"
-          + " type 'multi' to search by multiple criteria at the same time, or type 'quit' to exit"  
+          + " type 'multi' to search by multiple criteria at the same time, or type 'quit' to exit, or 'restart' to start a new search"  
           + "(Choices are: First Name, Last Name,\n Gender, Occupation,\n ID Number, Height,\n Weight, Age,\n"
           + " Date of Birth, Eye Color,\n Spouses ID Number,\n Parents ID Number.):", isTextString).toLowerCase();
       searchType = searchType.toLowerCase().split("").filter(isLetter).reduce(function(output,input){
@@ -80,6 +80,9 @@ function wideSearch(people){
         case 'quit':
           willContinue = false;
             return;
+        case "restart":
+            app(people); // restart
+            break;
         default:
             searchResults = wideSearch(pool);
           break;
