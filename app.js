@@ -29,53 +29,10 @@ function wideSearch(people){
   let pool = people;
   let willContinue = true;
   let searchResults;
-<<<<<<< HEAD
-  switch(searchType){
-    case 'first name':
-        searchResults = searchByFirstName(people);
-      break;
-    case 'last name':
-        searchResults = searchByLastName(people);
-        break;
-    case 'gender':
-        searchResults = searchByGender(people);
-        break;
-    case 'occupation':
-        searchResults = searchByOccupation(people);
-        break;
-    case 'id number':
-        searchResults = searchById(people);
-        break;
-    case 'height':
-        searchResults = searchByHeight(people);
-        break;
-    case 'weight':
-        searchResults = searchByWeight(people);
-        break;
-    case 'age':
-        searchResults = searchByAge(people);
-        break;
-    case 'date of birth':
-        searchResults = searchByDateOfBirth(people);
-        break;
-    case 'eye color':
-        searchResults = searchByEyeColor(people);
-        break;
-    case 'spouse\'s id number':
-        searchResults = searchBySpousesId(people);
-        break;
-    case 'parent\'s id number':
-        searchResults = searchByParentsId(people);
-        break;
-    default:
-        searchResults = wideSearch(people);
-      break;
-  }
-=======
   while(willContinue){
-      let searchType = promptFor("Enter the type of information you would like to search by or type 'quit' to exit"  
-          + "(Choices are: First Name, Last Name,\n Gender, Occupation,\n ID Number, Height,\n Weight, Age,\n"
-          + " Date of Birth, Eye Color,\n Spouses ID Number,\n Parents ID Number.):", isTextString).toLowerCase();
+      let searchType = promptFor("Enter the type of information you would like to search by or type 'quit' to exit.\n"  
+          + "Choices are:\n First Name, Last Name,\n Gender, Occupation,\n ID Number, Height,\n Weight, Age,\n"
+          + " Date of Birth, Eye Color,\n Spouses ID Number,\n Parents ID Number.:", isTextString).toLowerCase();
       searchType = searchType.toLowerCase().split("").filter(isLetter).reduce(function(output,input){
         return output += input;
       },"");
@@ -134,7 +91,6 @@ function wideSearch(people){
         willContinue = false;
       }
    }
->>>>>>> f7dce889ad147cef2ac32a88c06de590f4d26b0a
   return searchResults[0];
   }
 function getDescendants(people,person){
@@ -181,7 +137,7 @@ function mainMenu(person, people){
   let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'").toLowerCase();
   switch(displayOption){
     case "info":
-      displayPerson(person);
+      displayPerson(people, person);
       mainMenu(person, people);
     break;
     case "family":
@@ -189,7 +145,12 @@ function mainMenu(person, people){
       mainMenu(person, people);
     break;
     case "descendants":
-      displayPeople(getDescendants(people,person));
+      if(getDescendants(people,person).length > 0) {
+        displayPeople(getDescendants(people,person));
+      }
+      else {
+        alert("That person has no descendants.");
+      }
       mainMenu(person, people);
     break;
     case "restart":
@@ -429,7 +390,12 @@ function displayPeople(people, isSearch = false){
   }
 }
 
-function displayPerson(person, printSpouse = true){
+// function displayCondense() {
+//   let personInfo = "";
+//   personInfo += "Last Name: " + person.lastName.toUpperCase() + "\n";
+// }
+
+function displayPerson(people, person, printSpouse = true){
   // print all of the information about a person:
   // height, weight, age, name, occupation, eye color.
   let personInfo = "First Name: " + person.firstName.toUpperCase() + "\n";
@@ -447,8 +413,8 @@ function displayPerson(person, printSpouse = true){
     }
   }
   if(person.currentSpouse != null && printSpouse){
-    let spouse = searchById(person.currentSpouse);
-    personInfo += "Current Spouse: " + "\n" + spuse.firstName.toUpperCase() + " " + spouse.lastName.toUpperCase();
+    let spouse = searchById(people, person.currentSpouse);
+    personInfo += "Current Spouse: " + "\n" + spouse.firstName.toUpperCase() + " " + spouse.lastName.toUpperCase() + "\n";
   }
   if(printSpouse){
     alert(personInfo);
@@ -460,15 +426,20 @@ function displayFamily(people, person, isPrint = true){
   let personInfo = "";
   let siblings = getSiblings(people, person);
   let parent;
-  if(person.parents){ 
+  if(person.parents){
+    if( person.parents.length < 2 ) {
+      personInfo += "Parent: " + "\n";
+    }
+    else {
+      personInfo += "Parents: " + "\n";
+    }
     for(let i = 0; i < person.parents.length; i++){
-      personInfo += "Parent: "
       parent = searchById(people,person.parents[i]);
       personInfo += parent.firstName + " " + parent.lastName + "\n";
     }
   }
   if(person.currentSpouse != null){
-    personInfo += "Current Spouse: " + "\n" + searchById(people, person.currentSpouse).firstName + " " + searchById(people, person.currentSpouse).lastName;
+    personInfo += "Current Spouse: " + "\n" + searchById(people, person.currentSpouse).firstName + " " + searchById(people, person.currentSpouse).lastName + "\n";
     }
   if(siblings.length > 0){
       personInfo += "Siblings: " + "\n";
