@@ -208,7 +208,12 @@ function mainMenu(person, people){
       mainMenu(person, people);
     break;
     case "descendants":
-      displayPeople(getDescendants(people,person));
+      if(getDescendants(people,person).length > 0) {
+        displayPeople(getDescendants(people,person));
+      }
+      else {
+        alert("That person has no descendants.");
+      }
       mainMenu(person, people);
     break;
     case "restart":
@@ -451,7 +456,7 @@ function displayPeople(people, isSearch = false){
   }
 }
 
-function displayPerson(people,person, printSpouse = true){
+function displayPerson(people, person, printSpouse = true){
   // print all of the information about a person:
   // height, weight, age, name, occupation, eye color.
   let personInfo = "First Name: " + person.firstName.toUpperCase() + "\n";
@@ -469,8 +474,8 @@ function displayPerson(people,person, printSpouse = true){
     }
   }
   if(person.currentSpouse != null && printSpouse){
-    let spouse = searchById(people,person.currentSpouse);
-    personInfo += "Current Spouse: " + "\n" + spouse.firstName.toUpperCase() + " " + spouse.lastName.toUpperCase();
+    let spouse = searchById(people, person.currentSpouse);
+    personInfo += "Current Spouse: " + "\n" + spouse.firstName.toUpperCase() + " " + spouse.lastName.toUpperCase() + "\n";
   }
   if(printSpouse){
     alert(personInfo);
@@ -482,15 +487,20 @@ function displayFamily(people, person, isPrint = true){
   let personInfo = "";
   let siblings = getSiblings(people, person);
   let parent;
-  if(person.parents){ 
+  if(person.parents){
+    if( person.parents.length < 2 ) {
+      personInfo += "Parent: " + "\n";
+    }
+    else {
+      personInfo += "Parents: " + "\n";
+    }
     for(let i = 0; i < person.parents.length; i++){
-      personInfo += "Parent: "
       parent = searchById(people,person.parents[i]);
       personInfo += parent.firstName + " " + parent.lastName + "\n";
     }
   }
   if(person.currentSpouse != null){
-    personInfo += "Current Spouse: " + "\n" + searchById(people, person.currentSpouse).firstName + " " + searchById(people, person.currentSpouse).lastName;
+    personInfo += "Current Spouse: " + "\n" + searchById(people, person.currentSpouse).firstName + " " + searchById(people, person.currentSpouse).lastName + "\n";
     }
   if(siblings.length > 0){
       personInfo += "Siblings: " + "\n";
