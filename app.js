@@ -29,51 +29,9 @@ function wideSearch(people){
   let pool = people;
   let willContinue = true;
   let searchResults;
-<<<<<<< HEAD
-  switch(searchType){
-    case 'first name':
-        searchResults = searchByFirstName(people);
-      break;
-    case 'last name':
-        searchResults = searchByLastName(people);
-        break;
-    case 'gender':
-        searchResults = searchByGender(people);
-        break;
-    case 'occupation':
-        searchResults = searchByOccupation(people);
-        break;
-    case 'id number':
-        searchResults = searchById(people);
-        break;
-    case 'height':
-        searchResults = searchByHeight(people);
-        break;
-    case 'weight':
-        searchResults = searchByWeight(people);
-        break;
-    case 'age':
-        searchResults = searchByAge(people);
-        break;
-    case 'date of birth':
-        searchResults = searchByDateOfBirth(people);
-        break;
-    case 'eye color':
-        searchResults = searchByEyeColor(people);
-        break;
-    case 'spouse\'s id number':
-        searchResults = searchBySpousesId(people);
-        break;
-    case 'parent\'s id number':
-        searchResults = searchByParentsId(people);
-        break;
-    default:
-        searchResults = wideSearch(people);
-      break;
-  }
-=======
   while(willContinue){
-      let searchType = promptFor("Enter the type of information you would like to search by or type 'quit' to exit"  
+      let searchType = promptFor("SINGLE SEARCH:\nEnter the type of information you would like to search by,"
+          + " type 'multi' to search by multiple criteria at the same time, or type 'quit' to exit"  
           + "(Choices are: First Name, Last Name,\n Gender, Occupation,\n ID Number, Height,\n Weight, Age,\n"
           + " Date of Birth, Eye Color,\n Spouses ID Number,\n Parents ID Number.):", isTextString).toLowerCase();
       searchType = searchType.toLowerCase().split("").filter(isLetter).reduce(function(output,input){
@@ -116,6 +74,9 @@ function wideSearch(people){
         case 'parentsidnumber':
             searchResults = searchByParentsId(pool);
             break;
+        case 'multi':
+            searchResults = multiSearch(pool);
+            break;
         case 'quit':
           willContinue = false;
             return;
@@ -134,9 +95,67 @@ function wideSearch(people){
         willContinue = false;
       }
    }
->>>>>>> f7dce889ad147cef2ac32a88c06de590f4d26b0a
   return searchResults[0];
   }
+function multiSearch(people){
+  let pool = people;
+  let searchResults;
+  let searchType = promptFor("MULTIPLE SEARCH:\nEnter the type of information you want to search for followed by a colon,"
+          + "seperate searches with a semi-colon.(eg. eye color: blue;last name: madden)"  
+          + "(Choices are: First Name, Last Name,\n Gender, Occupation,\n ID Number, Height,\n Weight, Age,\n"
+          + " Date of Birth, Eye Color,\n Spouses ID Number,\n Parents ID Number.):", isMultiString).toLowerCase();
+      searchType = searchType.toLowerCase().split("").filter(isMultiChar).reduce(function(output,input){
+        return output += input;
+      },"");
+      let searchTypes = getMultiSearchArray(searchType);
+      for(let i = 0; i < searchTypes.length; i++){
+        switch(searchTypes[i].type){
+        case 'firstname':
+            searchResults = searchByFirstName(pool,searchTypes[i].value);
+          break;
+        case 'lastname':
+            searchResults = searchByLastName(pool,searchTypes[i].value);
+            break;
+        case 'gender':
+            searchResults = searchByGender(pool,searchTypes[i].value);
+            break;
+        case 'occupation':
+            searchResults = searchByOccupation(pool,searchTypes[i].value);
+            break;
+        case 'idnumber':
+            searchResults = searchById(pool,searchTypes[i].value);
+            break;
+        case 'height':
+            searchResults = searchByHeight(pool,searchTypes[i].value);
+            break;
+        case 'weight':
+            searchResults = searchByWeight(pool,searchTypes[i].value);
+            break;
+        case 'age':
+            searchResults = searchByAge(pool,searchTypes[i].value);
+            break;
+        case 'dateofbirth':
+            searchResults = searchByDateOfBirth(pool,searchTypes[i].value);
+            break;
+        case 'eyecolor':
+            searchResults = searchByEyeColor(pool,searchTypes[i].value);
+            break;
+        case 'spousesidnumber':
+            searchResults = searchBySpousesId(pool,searchTypes[i].value);
+            break;
+        case 'parentsidnumber':
+            searchResults = searchByParentsId(pool,searchTypes[i].value);
+            break;
+        case 'quit':
+            return;
+        default:
+            searchResults = multiSearch(people);
+            break;
+        } 
+        pool = searchResults;
+      }
+      return pool;
+}
 function getDescendants(people,person){
   let output = searchByParentsId(people,person.id);
   if(output){
@@ -181,7 +200,7 @@ function mainMenu(person, people){
   let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'").toLowerCase();
   switch(displayOption){
     case "info":
-      displayPerson(person);
+      displayPerson(people,person);
       mainMenu(person, people);
     break;
     case "family":
@@ -313,6 +332,9 @@ function searchByHeight(people, height){
     height = promptFor("What is the person's height?", isAgeHeightWeight);
   }
   height = height.toString().trim();
+  if(isHeight(height)){
+    height = getHeight(height);
+  }
   let foundPerson = people.filter(function(person){
     if(person.height == height){
       return true;
@@ -359,7 +381,7 @@ function searchByOccupation(people, job){
   }
   job = job.toString().trim();
   let foundPerson = people.filter(function(person){
-    if(person.job == job){
+    if(person.occupation == job){
       return true;
     }
     else{
@@ -429,7 +451,7 @@ function displayPeople(people, isSearch = false){
   }
 }
 
-function displayPerson(person, printSpouse = true){
+function displayPerson(people,person, printSpouse = true){
   // print all of the information about a person:
   // height, weight, age, name, occupation, eye color.
   let personInfo = "First Name: " + person.firstName.toUpperCase() + "\n";
@@ -447,8 +469,8 @@ function displayPerson(person, printSpouse = true){
     }
   }
   if(person.currentSpouse != null && printSpouse){
-    let spouse = searchById(person.currentSpouse);
-    personInfo += "Current Spouse: " + "\n" + spuse.firstName.toUpperCase() + " " + spouse.lastName.toUpperCase();
+    let spouse = searchById(people,person.currentSpouse);
+    personInfo += "Current Spouse: " + "\n" + spouse.firstName.toUpperCase() + " " + spouse.lastName.toUpperCase();
   }
   if(printSpouse){
     alert(personInfo);
@@ -490,7 +512,9 @@ function promptFor(question, valid){
     let response = "";
   do{
     response = prompt(question);
-
+    if(!valid(response)){
+      alert("Improper input, try again.")
+    }
 }while(!valid(response));
   return response;
 }
@@ -549,22 +573,22 @@ function isDOB(input){
 function isAgeHeightWeight(input){
   if(input){
   input = input.toString().trim();
-    return (input.length > 0 && input.length <= 3) && isNumber(input);
+    return ((input.length > 0 && input.length <= 3) && isNumber(input)) || isHeight(input);
   }
 }
 function isHeight(input){
-  return indexOf("ft") > 0
-    || indexOf("foot") > 0
-    || indexOf("feet") > 0
-    || indexOf("in") > 0
-    || indexOf("inches") > 0;
+  return input.indexOf("ft") > 0
+    || input.indexOf("foot") > 0
+    || input.indexOf("feet") > 0
+    || input.indexOf("in") > 0
+    || input.indexOf("inches") > 0;
 }
 function getHeight(input){
   if(input){
     input = input.toString().trim().toLowerCase();
     let testArray;
     let output = 0;
-    if(input.indexOf("ft") > 0 || input.indexOf("foot") > 0 || input.indexOf("feet") > 0){
+    if(input.indexOf("ft") > 0 || input.indexOf("foot") > 0 || input.indexOf("feet") > 0 || input.indexOf("'") > 0){
       output += parseInt(input.split("ft")[0].split("foot")[0].split("feet")[0])*12;
       if(input.indexOf("in") > 0 || input.indexOf("inches") > 0){
         if(input.indexOf("ft") > 0){
@@ -582,8 +606,8 @@ function getHeight(input){
     else if(input.indexOf("in") > 0 || input.indexOf("inches") > 0){
       output += parseInt(input.split("inches")[0].split("in")[0]);
     }
+   return output;
   }
-  return output;
 }
 function isDOBOrAge(input){
   return isDOB(input) || isAgeHeightWeight(input);
@@ -621,6 +645,36 @@ function isTextString(input){
         return false;
       }
     }
+    return true;
   }
-  return true;
+  
+}
+function isMultiChar(input){
+  return "ABCDEFGHIJKLMNOPQRSTUVWXYZ;:1234567890".indexOf(input.toUpperCase()) >= 0;
+}
+function isMultiString(input){
+ if(input){
+  let validInputTypes = ['firstname','lastname','gender','occupation','idnumber','height','weight','age','dateofbirth','eyecolor','spousesidnumber','parentsidnumber','quit'];
+    input = input.toLowerCase().split("").filter(isMultiChar).reduce(function(output,input){
+        return output += input;
+      },"");
+    input = getMultiSearchArray(input);
+    for(let i = 0; i < input.length; i++){
+      if(!validInputTypes.includes(input[i].type)){
+        return false;
+      } 
+    }
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+function getMultiSearchArray(input){
+  let searchTypes = input.split(";");
+      for(let i = 0; i < searchTypes.length; i++){
+        searchTypes[i] = {type: searchTypes[i].split(":")[0], 
+                          value: searchTypes[i].split(":")[1]};
+      }
+      return searchTypes;
 }
