@@ -4,7 +4,7 @@ Build all of your functions for displaying and gathering information below (GUI)
 */
 // app is the function called to start the entire application
 function app(people){
-  let searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
+  let searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes', 'no', or 'quit'", yesNo).toLowerCase();
   searchType = searchType.trim();
   let searchResults;
   switch(searchType){
@@ -14,6 +14,8 @@ function app(people){
     case 'no':
       searchResults = wideSearch(people);
       break;
+    case 'quit':
+      return;
       default:
     app(people); // restart app
       break;
@@ -53,6 +55,9 @@ function wideSearch(people){
         case 'idnumber':
             searchResults = [searchById(pool)];
             break;
+        case 'id':
+            searchResults = [searchById(pool)];
+            break;
         case 'height':
             searchResults = searchByHeight(pool);
             break;
@@ -69,17 +74,23 @@ function wideSearch(people){
             searchResults = searchByEyeColor(pool);
             break;
         case 'spousesidnumber':
-            searchResults = searchBySpousesId(pool);
+            searchResults = [searchBySpousesId(pool)];
+            break;
+        case 'spousesid':
+            searchResults = [searchBySpousesId(pool)];
             break;
         case 'parentsidnumber':
-            searchResults = searchByParentsId(pool);
+            searchResults = [searchByParentsId(pool)];
+            break;
+        case 'parentsid':
+            searchResults = [searchByParentsId(pool)];
             break;
         case 'multi':
             searchResults = multiSearch(pool);
             break;
         case 'quit':
           willContinue = false;
-            return;
+            return {willQuitProgram:true};
         default:
             searchResults = wideSearch(pool);
           break;
@@ -87,9 +98,11 @@ function wideSearch(people){
       if(searchResults.length == 0){
         alert("No matches for that search.")
       }
-      else{
+      else {
         pool = searchResults;
-        displayPeople(pool,true);
+        if(!searchResults[0].willQuitProgram){
+           displayPeople(pool,true);
+        }
       }
       if(pool.length == 1){
         willContinue = false;
@@ -123,7 +136,10 @@ function multiSearch(people){
             searchResults = searchByOccupation(pool,searchTypes[i].value);
             break;
         case 'idnumber':
-            searchResults = searchById(pool,searchTypes[i].value);
+            searchResults = [searchById(pool,searchTypes[i].value)];
+            break;
+        case 'id':
+            searchResults = [searchById(pool,searchTypes[i].value)];
             break;
         case 'height':
             searchResults = searchByHeight(pool,searchTypes[i].value);
@@ -141,13 +157,19 @@ function multiSearch(people){
             searchResults = searchByEyeColor(pool,searchTypes[i].value);
             break;
         case 'spousesidnumber':
-            searchResults = searchBySpousesId(pool,searchTypes[i].value);
+            searchResults = [searchBySpousesId(pool,searchTypes[i].value)];
+            break;
+        case 'spousesid':
+            searchResults = [searchBySpousesId(pool,searchTypes[i].value)];
             break;
         case 'parentsidnumber':
-            searchResults = searchByParentsId(pool,searchTypes[i].value);
+            searchResults = [searchByParentsId(pool,searchTypes[i].value)];
+            break;
+        case 'parentsid':
+            searchResults = [searchByParentsId(pool,searchTypes[i].value)];
             break;
         case 'quit':
-            return null;
+            return [{willQuitProgram:true}];
         default:
             searchResults = multiSearch(people);
             break;
@@ -197,7 +219,11 @@ function mainMenu(person, people){
     alert("Could not find that individual.");
     return app(people); // restart
   }
-  let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'").toLowerCase();
+  if(person.willQuitProgram){
+    return;
+  }
+  let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
+  displayOption = displayOption.toLowerCase();
   switch(displayOption){
     case "info":
       displayPerson(people,person);
@@ -491,7 +517,7 @@ function displayFamily(people, person, isPrint = true){
     if( person.parents.length == 1 ) {
       personInfo += "Parent: " + "\n";
     }
-    else {
+    else if(person.parents.length == 2){
       personInfo += "Parents: " + "\n";
     }
     for(let i = 0; i < person.parents.length; i++){
@@ -540,8 +566,10 @@ function getAge(dob){
 }
 // helper function to pass into promptFor to validate yes/no answers
 function yesNo(input){
-  input = input.trim();
-  return input.toLowerCase() == "yes" || input.toLowerCase() == "no";
+  if(input){
+    input = input.toString().trim().toLowerCase();
+    return input == "yes" || input == "no" || input == "quit";
+  }
 }
 
 // helper function to pass in as default promptFor validation
@@ -664,7 +692,7 @@ function isMultiChar(input){
 }
 function isMultiString(input){
  if(input){
-  let validInputTypes = ['firstname','lastname','gender','occupation','idnumber','height','weight','age','dateofbirth','eyecolor','spousesidnumber','parentsidnumber','quit'];
+  let validInputTypes = ['firstname','lastname','gender','occupation','idnumber','id','height','weight','age','dateofbirth','eyecolor','spousesidnumber','spousesid','parentsidnumber','parentsid','quit'];
     input = input.toLowerCase().split("").filter(isMultiChar).reduce(function(output,input){
         return output += input;
       },"");
