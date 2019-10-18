@@ -70,7 +70,7 @@ function wideSearch(people){
         searchResults = searchByParentsId(people);
         break;
     default:
-        searchResults = chooseIndividual(wideSearch(people));
+        searchResults = wideSearch(people);
       break;
   }
 
@@ -416,7 +416,7 @@ function displayFamily(people, person, isPrint = true){
 
 // function that prompts and validates user input
 function promptFor(question, valid){
-    let response;
+    let response = "";
   do{
     response = prompt(question);
 
