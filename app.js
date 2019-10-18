@@ -51,7 +51,7 @@ function wideSearch(people){
             searchResults = searchByOccupation(pool);
             break;
         case 'idnumber':
-            searchResults = searchById(pool);
+            searchResults = [searchById(pool)];
             break;
         case 'height':
             searchResults = searchByHeight(pool);
@@ -147,7 +147,7 @@ function multiSearch(people){
             searchResults = searchByParentsId(pool,searchTypes[i].value);
             break;
         case 'quit':
-            return;
+            return null;
         default:
             searchResults = multiSearch(people);
             break;
@@ -488,7 +488,7 @@ function displayFamily(people, person, isPrint = true){
   let siblings = getSiblings(people, person);
   let parent;
   if(person.parents){
-    if( person.parents.length < 2 ) {
+    if( person.parents.length == 1 ) {
       personInfo += "Parent: " + "\n";
     }
     else {
