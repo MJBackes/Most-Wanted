@@ -29,6 +29,7 @@ function wideSearch(people){
   let pool = people;
   let willContinue = true;
   let searchResults;
+<<<<<<< HEAD
   switch(searchType){
     case 'first name':
         searchResults = searchByFirstName(people);
@@ -70,9 +71,72 @@ function wideSearch(people){
         searchResults = wideSearch(people);
       break;
   }
+=======
+  while(willContinue){
+      let searchType = promptFor("Enter the type of information you would like to search by or type 'quit' to exit"  
+          + "(Choices are: First Name, Last Name,\n Gender, Occupation,\n ID Number, Height,\n Weight, Age,\n"
+          + " Date of Birth, Eye Color,\n Spouses ID Number,\n Parents ID Number.):", isTextString).toLowerCase();
+      searchType = searchType.toLowerCase().split("").filter(isLetter).reduce(function(output,input){
+        return output += input;
+      },"");
+      switch(searchType){
+        case 'firstname':
+            searchResults = searchByFirstName(pool);
+          break;
+        case 'lastname':
+            searchResults = searchByLastName(pool);
+            break;
+        case 'gender':
+            searchResults = searchByGender(pool);
+            break;
+        case 'occupation':
+            searchResults = searchByOccupation(pool);
+            break;
+        case 'idnumber':
+            searchResults = searchById(pool);
+            break;
+        case 'height':
+            searchResults = searchByHeight(pool);
+            break;
+        case 'weight':
+            searchResults = searchByWeight(pool);
+            break;
+        case 'age':
+            searchResults = searchByAge(pool);
+            break;
+        case 'dateofbirth':
+            searchResults = searchByDateOfBirth(pool);
+            break;
+        case 'eyecolor':
+            searchResults = searchByEyeColor(pool);
+            break;
+        case 'spousesidnumber':
+            searchResults = searchBySpousesId(pool);
+            break;
+        case 'parentsidnumber':
+            searchResults = searchByParentsId(pool);
+            break;
+        case 'quit':
+          willContinue = false;
+            return;
+        default:
+            searchResults = wideSearch(pool);
+          break;
+      }
+      if(searchResults.length == 0){
+        alert("No matches for that search.")
+      }
+      else{
+        pool = searchResults;
+        displayPeople(pool,true);
+      }
+      if(pool.length == 1){
+        willContinue = false;
+      }
+   }
+>>>>>>> f7dce889ad147cef2ac32a88c06de590f4d26b0a
   return searchResults[0];
-}
-
+  }
 function getDescendants(people,person){
   let output = searchByParentsId(people,person.id);
   if(output){
