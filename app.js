@@ -63,7 +63,7 @@ function mainMenu(person, people){
       displayFamily(person);
     break;
     case "descendants":
-    // TODO: get person's descendants
+      displayPeople(getDescendants(people,person));
     break;
     case "restart":
     app(people); // restart
@@ -154,10 +154,9 @@ function searchByEyeColor(people, eyeColor){
 }
 function searchByDateOfBirth(people, dob){
   if(!dob){
-    dob = promptFor("What is the person's date of birth or age?", isDOBOrAge);
+    dob = promptFor("What is the person's date of birth?", isDOB);
   }
   let foundPerson = [];
-  if(isDOB(dob)){
     dob = formatDOBInput(dob);
     foundPerson.push(people.filter(function(person){
       if(person.dob == dob){
@@ -167,17 +166,21 @@ function searchByDateOfBirth(people, dob){
         return false;
       }
     }));
+  return foundPerson;
+}
+function searchByAge(people, age){
+if(!age){
+    age = promptFor("What is the person's age?", isAgeHeightWeight);
   }
-  else if(isAgeHeightWeight(dob)){
-    foundPerson.push(people.filter(function(person){
-      if(getAge(person.dob) == dob){
+  let foundPerson = [];
+  foundPerson.push(people.filter(function(person){
+      if(getAge(person.dob) == age){
         return true;
       }
       else{
         return false;
       }
     }));
-  }
   return foundPerson;
 }
 function searchByHeight(people, height){
