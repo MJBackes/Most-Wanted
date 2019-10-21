@@ -35,7 +35,7 @@ function wideSearch(people){
       let searchType = promptFor("SINGLE SEARCH:\nEnter the type of information you would like to search by to narrow the search pool,"
           + " type 'multi' to search by multiple criteria in the same line, type 'quit' to exit, or 'restart' to start a new search"  
           + "(Choices are: First Name, Last Name,\n Gender, Occupation,\n ID Number, Height,\n Weight, Age,\n"
-          + " Date of Birth, Eye Color,\n Spouses ID Number,\n Parents ID Number.):", isTextString).toLowerCase();
+          + " Date of Birth, Eye Color,\n Minimum Age, Maximum Age, \n Spouses ID Number,\n Parents ID Number.):", isTextString).toLowerCase();
       searchType = searchType.toLowerCase().split("").filter(isLetter).reduce(function(output,input){
         return output += input;
       },"");
@@ -88,6 +88,18 @@ function wideSearch(people){
         case 'parentsid':
             searchResults = searchByParentsId(pool);
             break;
+         case 'minage':
+            searchResults = searchByMinAge(pool);
+            break;
+        case 'minimumage':
+            searchResults = searchByMinAge(pool);
+            break;
+        case 'maxage':
+            searchResults = searchByMaxAge(pool);
+            break;
+        case 'maximumage':
+            searchResults = searchByMaxAge(pool);
+            break;
         case 'multi':
             searchResults = multiSearch(pool);
             break;
@@ -101,7 +113,7 @@ function wideSearch(people){
             searchResults = wideSearch(pool);
           break;
       }
-      if(searchResults.length == 0){
+      if(searchResults.length == 0 || !searchResults[0]){
         alert("No matches for that search.")
       }
       else {
@@ -122,7 +134,7 @@ function multiSearch(people){
   let searchType = promptFor("MULTIPLE SEARCH:\nEnter the type of information you want to search for followed by a colon,"
           + "seperate searches with a semi-colon.(eg. eye color: blue;last name: madden)"  
           + "(Choices are: First Name, Last Name,\n Gender, Occupation,\n ID Number, Height,\n Weight, Age,\n"
-          + " Date of Birth, Eye Color,\n Spouses ID Number,\n Parents ID Number.):", isMultiString).toLowerCase();
+          + " Date of Birth, Eye Color,\nMinimum Age, Maximum Age, \n  Spouses ID Number,\n Parents ID Number.):", isMultiString).toLowerCase();
       searchType = searchType.toLowerCase().split("").filter(isMultiChar).reduce(function(output,input){
         return output += input;
       },"");
@@ -176,6 +188,18 @@ function multiSearch(people){
             break;
         case 'parentsid':
             searchResults = searchByParentsId(pool,searchTypes[i].value);
+            break;
+        case 'minage':
+            searchResults = searchByMinAge(pool, searchTypes[i].value);
+            break;
+        case 'minimumage':
+            searchResults = searchByMinAge(pool, searchTypes[i].value);
+            break;
+        case 'maxage':
+            searchResults = searchByMaxAge(pool, searchTypes[i].value);
+            break;
+        case 'maximumage':
+            searchResults = searchByMaxAge(pool, searchTypes[i].value);
             break;
         case 'quit':
             return [{willQuitProgram:true}];
@@ -263,7 +287,34 @@ function mainMenu(person, people){
     return mainMenu(person, people); // ask again
   }
 }
-
+function searchByMinAge(people, minAge){
+  if(!minAge){
+    minAge = promptFor("Give a minimum age to eliminate all people younger than that from the pool.", isAgeHeightWeight)
+  }
+  let foundPerson = people.filter(function(person){
+    if(getAge(person.dob) > minAge){
+      return true;
+    }
+    else{
+      return false;
+    }
+  });
+  return foundPerson;
+}
+function searchByMaxAge(people, maxAge){
+  if(!maxAge){
+    maxAge = promptFor("Give a maximum age to eliminate all people older than that from the pool.", isAgeHeightWeight)
+  }
+  let foundPerson = people.filter(function(person){
+    if(getAge(person.dob) < maxAge){
+      return true;
+    }
+    else{
+      return false;
+    }
+  });
+  return foundPerson;
+}
 function searchByName(people, firstName, lastName){
   if(!firstName){
   firstName = promptFor("What is the person's first name?", isTextString);
@@ -522,7 +573,7 @@ function displayPerson(people, person, print = true){
   }
   if(person.currentSpouse != null){
     let spouse = searchById(people, person.currentSpouse);
-    personInfo += "Current Spouse: " + "\n" + spouse.firstName + " " + spouse.lastName + "\n";
+    personInfo += "Current Spouse: " + spouse.firstName + " " + spouse.lastName + "\n";
   }
   if(print){
     alert(personInfo.toUpperCase());
@@ -638,11 +689,11 @@ function isAgeHeightWeight(input){
 }
 function isHeight(input){
   return input.indexOf("ft") > 0
-    || input.indexOf("foot") > 0
-    || input.indexOf("feet") > 0
-    || input.indexOf("in") > 0
-    || input.indexOf("inches") > 0
-    ||(input.indexOf("'") > 0 && isNumber(input.charAt(input.indexOf("'") - 1)));
+        || input.indexOf("foot") > 0
+        || input.indexOf("feet") > 0
+        || input.indexOf("in") > 0
+        || input.indexOf("inches") > 0
+        ||(input.indexOf("'") > 0 && isNumber(input.charAt(input.indexOf("'") - 1)));
 }
 function getHeight(input){
   if(input){
@@ -656,8 +707,8 @@ function getHeight(input){
       }
     }
     else if(input.indexOf("ft") > 0 
-      || input.indexOf("foot") > 0 
-      || input.indexOf("feet") > 0 ){
+            || input.indexOf("foot") > 0 
+            || input.indexOf("feet") > 0 ){
       output += parseInt(input.split("ft")[0].split("foot")[0].split("feet")[0])*12;
       if(input.indexOf("in") > 0 || input.indexOf("inches") > 0){
         if(input.indexOf("ft") > 0){
@@ -723,7 +774,7 @@ function isMultiChar(input){
 }
 function isMultiString(input){
  if(input){
-  let validInputTypes = ['firstname','lastname','gender','occupation','idnumber','id','height','weight','age','dateofbirth','dob','eyecolor','spousesidnumber','spousesid','parentsidnumber','parentsid','quit'];
+  let validInputTypes = ['firstname','lastname','gender','occupation','idnumber','id','height','weight','age','dateofbirth','dob','eyecolor','spousesidnumber','spousesid','parentsidnumber','parentsid','minage','maxage','minimumage','maximumage','quit'];
     input = input.toLowerCase().split("").filter(isMultiChar).reduce(function(output,input){
         return output += input;
       },"");
