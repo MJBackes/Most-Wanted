@@ -83,10 +83,10 @@ function wideSearch(people){
             searchResults = [searchBySpousesId(pool)];
             break;
         case 'parentsidnumber':
-            searchResults = [searchByParentsId(pool)];
+            searchResults = searchByParentsId(pool);
             break;
         case 'parentsid':
-            searchResults = [searchByParentsId(pool)];
+            searchResults = searchByParentsId(pool);
             break;
         case 'multi':
             searchResults = multiSearch(pool);
@@ -172,10 +172,10 @@ function multiSearch(people){
             searchResults = [searchBySpousesId(pool,searchTypes[i].value)];
             break;
         case 'parentsidnumber':
-            searchResults = [searchByParentsId(pool,searchTypes[i].value)];
+            searchResults = searchByParentsId(pool,searchTypes[i].value);
             break;
         case 'parentsid':
-            searchResults = [searchByParentsId(pool,searchTypes[i].value)];
+            searchResults = searchByParentsId(pool,searchTypes[i].value);
             break;
         case 'quit':
             return [{willQuitProgram:true}];
