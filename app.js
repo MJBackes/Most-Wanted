@@ -190,11 +190,12 @@ function multiSearch(people){
 function getDescendants(people,person){
   let output = searchByParentsId(people,person.id);
   if(output){
-    for(let i = 0; i < output.length; i++){
+    let  generationSize = output.length;
+    for(let i = 0; i < generationSize; i++){
        output = output.concat(getDescendants(people,output[i]));
      }
   }
-  return output;
+  return removeDuplicates(output);
 }
 function getSiblings(people, person){
   let siblings = [];
@@ -223,7 +224,8 @@ function removeDuplicates(array){
 // Menu function to call once you find who you are looking for
 function mainMenu(person, people){
 
-  /* Here we pass in the entire person object that we found in our search, as well as the entire original dataset of people. We need people in order to find descendants and other information that the user may want. */
+  /* Here we pass in the entire person object that we found in our search, as well as the entire original dataset of people. 
+  We need people in order to find descendants and other information that the user may want. */
   if(!person){
     alert("Could not find that individual.");
     return app(people); // restart
@@ -231,7 +233,8 @@ function mainMenu(person, people){
   if(person.willQuitProgram){
     return;
   }
-  let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
+  let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info',"
+    + " 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
   displayOption = displayOption.toLowerCase();
   switch(displayOption){
     case "info":
@@ -340,7 +343,7 @@ function searchByEyeColor(people, eyeColor){
 }
 function searchByDateOfBirth(people, dob){
   if(!dob){
-    dob = promptFor("What is the person's date of birth?", isDOB);
+    dob = promptFor("What is the person's date of birth?(MM/DD/YYYY)", isDOB);
   }
     dob = formatDOBInput(dob);
    let foundPerson = people.filter(function(person){
@@ -491,17 +494,17 @@ function displayPeople(people, isSearch = false){
   }
 }
 
-function displayPerson(people, person, printSpouse = true){
+function displayPerson(people, person, print = true){
   // print all of the information about a person:
   // height, weight, age, name, occupation, eye color.
-  let personInfo = "First Name: " + person.firstName.toUpperCase() + "\n";
-  personInfo += "Last Name: " + person.lastName.toUpperCase() + "\n";
-  personInfo += "Gender: " + person.gender.toUpperCase() + "\n";
+  let personInfo = "First Name: " + person.firstName + "\n";
+  personInfo += "Last Name: " + person.lastName + "\n";
+  personInfo += "Gender: " + person.gender + "\n";
   personInfo += "Date of Birth: " + person.dob + "\n";
   personInfo += "Height: " + person.height + "\n";
   personInfo += "Weight: " + person.weight + "\n";
-  personInfo += "Eye Color: " + person.eyeColor.toUpperCase() + "\n";
-  personInfo += "Occupation: " + person.occupation.toUpperCase() + "\n";
+  personInfo += "Eye Color: " + person.eyeColor + "\n";
+  personInfo += "Occupation: " + person.occupation + "\n";
   if(person.parents){ 
     for(let i = 0; i < person.parents.length; i++){
       parent = searchById(people,person.parents[i])
@@ -514,17 +517,17 @@ function displayPerson(people, person, printSpouse = true){
       else{
         personInfo += "Parent: ";
       }
-      personInfo += parent.firstName.toUpperCase() + " " + parent.lastName.toUpperCase() + "\n";
+      personInfo += parent.firstName + " " + parent.lastName + "\n";
     }
   }
-  if(person.currentSpouse != null && printSpouse){
+  if(person.currentSpouse != null){
     let spouse = searchById(people, person.currentSpouse);
-    personInfo += "Current Spouse: " + "\n" + spouse.firstName.toUpperCase() + " " + spouse.lastName.toUpperCase() + "\n";
+    personInfo += "Current Spouse: " + "\n" + spouse.firstName + " " + spouse.lastName + "\n";
   }
-  if(printSpouse){
-    alert(personInfo);
+  if(print){
+    alert(personInfo.toUpperCase());
   }
-  return personInfo;
+  return personInfo.toUpperCase();
 }
 
 function displayFamily(people, person, isPrint = true){
@@ -540,25 +543,26 @@ function displayFamily(people, person, isPrint = true){
       else if (parent.gender == 'female'){
         personInfo += "Mother: ";
       }
-      personInfo += parent.firstName.toUpperCase() + " " + parent.lastName.toUpperCase() + "\n";
+      personInfo += parent.firstName + " " + parent.lastName + "\n";
     }
   }
   if(person.currentSpouse != null){
-    personInfo += "Current Spouse: " + "\n" + searchById(people, person.currentSpouse).firstName.toUpperCase() + " " + searchById(people, person.currentSpouse).lastName.toUpperCase() + "\n";
+    personInfo += "Current Spouse: " + "\n" + searchById(people, person.currentSpouse).firstName + " " 
+    + searchById(people, person.currentSpouse).lastName + "\n";
     }
   if(siblings.length > 0){
       personInfo += "Siblings: " + "\n";
       for(let i = 0; i < siblings.length; i++){
-        personInfo += siblings[i].firstName.toUpperCase() + " " + siblings[i].lastName.toUpperCase() + "\n";
+        personInfo += siblings[i].firstName + " " + siblings[i].lastName + "\n";
       }
   }
   if(personInfo.length > 0){
-    alert(personInfo);
+    alert(personInfo.toUpperCase());
   }
   else{
     alert("That person has no parents,siblings or current spouse.")
   }
-  return personInfo;
+  return personInfo.toUpperCase();
 }
 
 // function that prompts and validates user input
@@ -637,14 +641,23 @@ function isHeight(input){
     || input.indexOf("foot") > 0
     || input.indexOf("feet") > 0
     || input.indexOf("in") > 0
-    || input.indexOf("inches") > 0;
+    || input.indexOf("inches") > 0
+    ||(input.indexOf("'") > 0 && isNumber(input.charAt(input.indexOf("'") - 1)));
 }
 function getHeight(input){
   if(input){
     input = input.toString().trim().toLowerCase();
     let testArray;
     let output = 0;
-    if(input.indexOf("ft") > 0 || input.indexOf("foot") > 0 || input.indexOf("feet") > 0 || input.indexOf("'") > 0){
+    if((input.indexOf("'") > 0 && isNumber(input.charAt(input.indexOf("'") - 1)))){
+      output += parseInt(input.split("'")[0])*12;
+      if((input.indexOf('"') > 0 && isNumber(input.charAt(input.indexOf('"') - 1)))){
+        output += parseInt(input.split("'")[1].split('"')[0]);
+      }
+    }
+    else if(input.indexOf("ft") > 0 
+      || input.indexOf("foot") > 0 
+      || input.indexOf("feet") > 0 ){
       output += parseInt(input.split("ft")[0].split("foot")[0].split("feet")[0])*12;
       if(input.indexOf("in") > 0 || input.indexOf("inches") > 0){
         if(input.indexOf("ft") > 0){
