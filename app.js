@@ -160,7 +160,7 @@ function multiSearch(people){
             searchResults = searchByDateOfBirth(pool,searchTypes[i].value);
             break;
         case 'dob':
-            searchResults = searchByDateOfBirth(pool);
+            searchResults = searchByDateOfBirth(pool,searchTypes[i].value);
             break;
         case 'eyecolor':
             searchResults = searchByEyeColor(pool,searchTypes[i].value);
@@ -719,7 +719,7 @@ function isTextString(input){
   
 }
 function isMultiChar(input){
-  return "ABCDEFGHIJKLMNOPQRSTUVWXYZ;:1234567890".indexOf(input.toUpperCase()) >= 0;
+  return "ABCDEFGHIJKLMNOPQRSTUVWXYZ;:1234567890/".indexOf(input.toUpperCase()) >= 0;
 }
 function isMultiString(input){
  if(input){
