@@ -32,8 +32,8 @@ function wideSearch(people){
   let willContinue = true;
   let searchResults;
   while(willContinue){
-      let searchType = promptFor("SINGLE SEARCH:\nEnter the type of information you would like to search by,"
-          + " type 'multi' to search by multiple criteria at the same time, or type 'quit' to exit, or 'restart' to start a new search"  
+      let searchType = promptFor("SINGLE SEARCH:\nEnter the type of information you would like to search by to narrow the search pool,"
+          + " type 'multi' to search by multiple criteria in the same line, type 'quit' to exit, or 'restart' to start a new search"  
           + "(Choices are: First Name, Last Name,\n Gender, Occupation,\n ID Number, Height,\n Weight, Age,\n"
           + " Date of Birth, Eye Color,\n Spouses ID Number,\n Parents ID Number.):", isTextString).toLowerCase();
       searchType = searchType.toLowerCase().split("").filter(isLetter).reduce(function(output,input){
@@ -70,6 +70,9 @@ function wideSearch(people){
         case 'dateofbirth':
             searchResults = searchByDateOfBirth(pool);
             break;
+        case 'dob':
+            searchResults = searchByDateOfBirth(pool);
+            break;
         case 'eyecolor':
             searchResults = searchByEyeColor(pool);
             break;
@@ -103,7 +106,7 @@ function wideSearch(people){
       }
       else {
         pool = searchResults;
-        if(!searchResults[0].willQuitProgram){
+        if(searchResults[0] && !searchResults[0].willQuitProgram){
            displayPeople(pool,true);
         }
       }
@@ -155,6 +158,9 @@ function multiSearch(people){
             break;
         case 'dateofbirth':
             searchResults = searchByDateOfBirth(pool,searchTypes[i].value);
+            break;
+        case 'dob':
+            searchResults = searchByDateOfBirth(pool);
             break;
         case 'eyecolor':
             searchResults = searchByEyeColor(pool,searchTypes[i].value);
@@ -480,7 +486,7 @@ function displayPeople(people, isSearch = false){
   else{
     alert("Current pool of people who match all the criteria you have input: \n" + 
       people.map(function(person){
-    return person.firstName + " " + person.lastName;
+    return person.firstName.toUpperCase() + " " + person.lastName.toUpperCase();
   }).join("\n"));
   }
 }
@@ -498,8 +504,17 @@ function displayPerson(people, person, printSpouse = true){
   personInfo += "Occupation: " + person.occupation.toUpperCase() + "\n";
   if(person.parents){ 
     for(let i = 0; i < person.parents.length; i++){
-      personInfo += "Parent: "
-      personInfo += person.parents[i] + "\n";
+      parent = searchById(people,person.parents[i])
+      if(parent.gender == 'male'){
+        personInfo += "Father: ";
+      }
+      else if (parent.gender == 'female'){
+        personInfo += "Mother: ";
+      }
+      else{
+        personInfo += "Parent: ";
+      }
+      personInfo += parent.firstName.toUpperCase() + " " + parent.lastName.toUpperCase() + "\n";
     }
   }
   if(person.currentSpouse != null && printSpouse){
@@ -517,24 +532,24 @@ function displayFamily(people, person, isPrint = true){
   let siblings = getSiblings(people, person);
   let parent;
   if(person.parents){
-    if( person.parents.length == 1 ) {
-      personInfo += "Parent: " + "\n";
-    }
-    else if(person.parents.length == 2){
-      personInfo += "Parents: " + "\n";
-    }
     for(let i = 0; i < person.parents.length; i++){
       parent = searchById(people,person.parents[i]);
-      personInfo += parent.firstName + " " + parent.lastName + "\n";
+      if(parent.gender == 'male'){
+        personInfo += "Father: ";
+      }
+      else if (parent.gender == 'female'){
+        personInfo += "Mother: ";
+      }
+      personInfo += parent.firstName.toUpperCase() + " " + parent.lastName.toUpperCase() + "\n";
     }
   }
   if(person.currentSpouse != null){
-    personInfo += "Current Spouse: " + "\n" + searchById(people, person.currentSpouse).firstName + " " + searchById(people, person.currentSpouse).lastName + "\n";
+    personInfo += "Current Spouse: " + "\n" + searchById(people, person.currentSpouse).firstName.toUpperCase() + " " + searchById(people, person.currentSpouse).lastName.toUpperCase() + "\n";
     }
   if(siblings.length > 0){
       personInfo += "Siblings: " + "\n";
       for(let i = 0; i < siblings.length; i++){
-        personInfo += siblings[i].firstName + " " + siblings[i].lastName + "\n";
+        personInfo += siblings[i].firstName.toUpperCase() + " " + siblings[i].lastName.toUpperCase() + "\n";
       }
   }
   if(personInfo.length > 0){
@@ -695,7 +710,7 @@ function isMultiChar(input){
 }
 function isMultiString(input){
  if(input){
-  let validInputTypes = ['firstname','lastname','gender','occupation','idnumber','id','height','weight','age','dateofbirth','eyecolor','spousesidnumber','spousesid','parentsidnumber','parentsid','quit'];
+  let validInputTypes = ['firstname','lastname','gender','occupation','idnumber','id','height','weight','age','dateofbirth','dob','eyecolor','spousesidnumber','spousesid','parentsidnumber','parentsid','quit'];
     input = input.toLowerCase().split("").filter(isMultiChar).reduce(function(output,input){
         return output += input;
       },"");
