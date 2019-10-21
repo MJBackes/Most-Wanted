@@ -226,15 +226,17 @@ function getSiblings(people, person){
   let output = [];
   if(person.parents.length > 0){
     for(let i = 0; i < person.parents.length; i++){
-       siblings = siblings.concat(getDescendants(people,searchById(people,person.parents[i])));
-     }
-     for(let i = 0; i < siblings.length; i++){
-      if(siblings[i] != person){
-        output.push(siblings[i]);
-      }
+       siblings = siblings.concat(people.filter(function(potentialSibling){
+        if(potentialSibling.parents.includes(person.parents[i]) && potentialSibling != person){
+          return true;
+        }
+        else{
+          return false;
+        }
+       }));
      }
   }
-  return removeDuplicates(output);
+  return removeDuplicates(siblings);
 }
 function removeDuplicates(array){
   let output = [];
